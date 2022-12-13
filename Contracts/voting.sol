@@ -67,6 +67,7 @@ contract Poll is Ownable {
 
     // @dev Function to vote
     function vote(uint _voteIndex) public pollOpen {
+        require(voters[msg.sender].canVote == true); // check voter can vote
         // if voter has already voted
         if (voters[msg.sender].voted == true) {
             uint previousChoice = voters[msg.sender].choice; // get voters previous choice
@@ -78,18 +79,13 @@ contract Poll is Ownable {
         pollOptions[_voteIndex].count += 1; // add 1 to the count of the voters choice
     }
 
-    // @dev Fetches total number of options
-    function numberOfOptions() public view returns(uint) {
-        return pollOptions.length;
-    }
+    // @dev Gets counts for the poll options
+    function returnPollOptionCounts() public view returns(VotingOption[] memory) {
+        VotingOption[] memory pollCounts = new VotingOption[](pollOptions.length);
 
-    // @dev Returns poll option name
-    function returnPollOptionName(uint _index) public view returns(string memory) {
-        return pollOptions[_index].name;
-    }
-
-    // @dev Returns poll option vote count
-    function returnPollOptionCount(uint _index) public view returns(uint) {
-        return pollOptions[_index].count;
+        for (uint i = 0; i < pollOptions.length; i++) {
+            pollCounts[i] = pollOptions[i];
+        }
+        return pollCounts;
     }
 }
